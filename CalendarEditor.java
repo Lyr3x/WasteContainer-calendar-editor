@@ -14,13 +14,24 @@ public class CalendarEditor {
     public static void main(String[] args) throws Exception {
         // arg[0] must be the name of the ics file to be edited
         String original = args[0];
+        String in_out = args[1];
 
         int extensionIndex = args[0].indexOf(".ics");
         String fileName = args[0].substring(0, extensionIndex);
-        BufferedWriter bw = new BufferedWriter(new FileWriter(fileName + "_edited.ics"));
+        String fileNameExtension = "_edited";
+        System.out.println(in_out);
+        if (in_out.equals("out")) {
+            System.out.println("Generating dates where the container needs to be carried out");
+            fileNameExtension += "_out.ics";
+        } else {
+            System.out.println("Generating dates where the container needs to be carried in");
+            fileNameExtension += "_in.ics";
+        }
+
+        BufferedWriter bw = new BufferedWriter(new FileWriter(fileName + fileNameExtension));
 
         System.out.println("... Creating new ICS file with your desired changes ...");
-        readOriginal(original, bw);
+        readOriginal(in_out, original, bw);
         bw.close();
         System.out.println("\nDone! Your new ICS file has been created.");
         return;
@@ -36,14 +47,15 @@ public class CalendarEditor {
         Date date = new SimpleDateFormat("yyyyMMdd").parse(dateString);
         Calendar c = Calendar.getInstance();
         c.setTime(date);
-        c.add(Calendar.DATE, 1);
+        c.add(Calendar.DATE, -1);
         date = c.getTime();
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         dateString = dateFormat.format(date);
         return dateString;
     }
 
-    public static void readOriginal(String originalString, BufferedWriter bw) throws IOException, ParseException {
+    public static void readOriginal(String in_out, String originalString, BufferedWriter bw)
+            throws IOException, ParseException {
         BufferedReader original = new BufferedReader(new FileReader(originalString));
         String line;
         String startTime = "DTSTART;VALUE=DATE:"; // 19
@@ -53,33 +65,46 @@ public class CalendarEditor {
         String description = "DESCRIPTION;LANGUAGE=de:";
         String dateString;
         while ((line = original.readLine()) != null) {
-            if (line.startsWith(startTime)) {
-                dateString = changeDate(line, 19);
-                bw.write(startTime + dateString);
-                bw.newLine();
-                bw.flush();
-            } else if (line.startsWith(endTime)) {
-                dateString = changeDate(line, 17);
-                bw.write(endTime + dateString);
-                bw.newLine();
-                bw.flush();
-            } else if (line.startsWith(summary)) {
-                bw.write(line + "rein holen");
-                bw.newLine();
-                bw.flush();
-            } else if (line.startsWith(description)) {
-                bw.write(description.substring(0, 24) + "Tonne bitte wieder rein stellen.");
-                bw.newLine();
-                bw.flush();
-            } else if (line.startsWith(uid)) {
-                String uuid = genUUID();
-                bw.write("UID:" + uuid);
-                bw.newLine();
-                bw.flush();
+            if (in_out.equals("out")) {
+                if (line.startsWith(startTime)) {
+                    dateString = changeDate(line, 19);
+                    bw.write(startTime + dateString);
+                    bw.newLine();
+                    bw.flush();
+                } else if (line.startsWith(endTime)) {
+                    dateString = changeDate(line, 17);
+                    bw.write(endTime + dateString);
+                    bw.newLine();
+                    bw.flush();
+                } else if (line.startsWith(summary)) {
+                    bw.write(line + "raus");
+                    bw.newLine();
+                    bw.flush();
+
+                } else {
+                    bw.write(line);
+                    bw.newLine();
+                    bw.flush();
+                }
             } else {
-                bw.write(line);
-                bw.newLine();
-                bw.flush();
+                if (line.startsWith(summary)) {
+                    bw.write(line + "rein");
+                    bw.newLine();
+                    bw.flush();
+                } else if (line.startsWith(description)) {
+                    bw.write(description.substring(0, 24) + "Tonne bitte wieder rein stellen.");
+                    bw.newLine();
+                    bw.flush();
+                } else if (line.startsWith(uid)) {
+                    String uuid = genUUID();
+                    bw.write("UID:" + uuid);
+                    bw.newLine();
+                    bw.flush();
+                } else {
+                    bw.write(line);
+                    bw.newLine();
+                    bw.flush();
+                }
             }
         }
         original.close();
