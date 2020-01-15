@@ -6,12 +6,19 @@ I also enabled the todoist integration to google calendar, where i imported both
 That way i get the approriate todos in todoist whenever i need to interact with a waste container.
 
 The tool edits the following fields
-* DTSTART;VALUE=DATE:<time> 
-* DTEND;VALUE=DATE:<time>
-* DESCRIPTION;LANGUAGE=de:<Description>
-* SUMMARY;LANGUAGE=de:<Summary>
-* UID:<generated UUID>
-  
+* DTSTART;VALUE=DATE:time
+* DTEND;VALUE=DATE:time
+* DESCRIPTION;LANGUAGE=de:Description
+* SUMMARY;LANGUAGE=de:Summary
+* UID:generatedUUID
+
+#Usage
+```
+javac CalendarEditor.java
+java CalendarEditor.java Leerungstermine1234567.ics [in|out]
+```
+Import both generated .ics files to your calendar
+
 # Screenshots
 ![Google Calendar](gcal_screenshot.png "Google Calendar screenshot")
 ![Todoist](todoist_screenshot.png "Todoist screenshot")
