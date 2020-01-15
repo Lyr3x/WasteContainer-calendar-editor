@@ -10,7 +10,8 @@ The tool edits the following fields
 * DTEND;VALUE=DATE:<time>
 * DESCRIPTION;LANGUAGE=de:<Description>
 * SUMMARY;LANGUAGE=de:<Summary>
-
+* UID:<generated UUID>
+  
 # Screenshots
 ![Google Calendar](gcal_screenshot.png "Google Calendar screenshot")
 ![Todoist](todoist_screenshot.png "Todoist screenshot")
